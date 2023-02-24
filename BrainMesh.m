@@ -203,9 +203,10 @@ classdef BrainMesh < matlab.apps.AppBase
                         colormap(app.UITable.Data{i,3});
                     elseif strcmp(app.UITable.Data{i,1},'u_3dmat')
                         u_structure = load(app.UITable.Data{i,2});
-                        [~,filename,~] = fileparts(app.UITable.Data{i,2});
-                        u_structure = eval(['u_structure.' filename]);
-                        patch('Vertices',u_structure.v','Faces',u_structure.F','EdgeColor','none','FaceColor',str2num(app.UITable.Data{i,3}),'FaceAlpha',app.UITable.Data{i,4});
+%                         [~,filename,~] = fileparts(app.UITable.Data{i,2});
+                        filename = fieldnames(u_structure);
+                        u_structure = eval(['u_structure.' filename{1}]);
+                        patch('Vertices',u_structure.v,'Faces',u_structure.F,'EdgeColor','none','FaceColor',str2num(app.UITable.Data{i,3}),'FaceAlpha',app.UITable.Data{i,4});
                     elseif strcmp(app.UITable.Data{i,1},'u_3dobj')
                         [v,F]=loadawobj(app.UITable.Data{i,2});
                         patch('Vertices',v','Faces',F','EdgeColor','none','FaceColor',str2num(app.UITable.Data{i,3}),'FaceAlpha',app.UITable.Data{i,4});
@@ -533,7 +534,9 @@ classdef BrainMesh < matlab.apps.AppBase
                 % disp(['User selected ', fullfile(path, file),' and filter index: ', num2str(indx)])
                 if strcmp(file(end-2:end),'mat')
                     u_structure = load(fullfile(path, file));
-                    u_structure = eval(['u_structure.' file(1:end-4)]);
+                    fieldnames_u_structure = fieldnames(u_structure);
+%                     u_structure = eval(['u_structure.' file(1:end-4)]);
+                    u_structure = eval(['u_structure.' fieldnames_u_structure{1}]); % modified to read any name of the struct
                     if ~isfield(u_structure,'v') || ~isfield(u_structure,'F')
                         errordlg('loaded mat file must have v(verticies) and F(Faces) field');
                         return;
